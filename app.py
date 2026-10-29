@@ -45,7 +45,7 @@ def item_card(row):
     return f"""<div class='card'><div class='emoji'>{icon}</div><b>{row['item_name']}</b><br><span class='muted'>{row['color']} · {row['category']}</span><br><br><span class='tag'>{row['occasion']}</span><span class='tag'>{row['style']}</span><br><span class='muted'>Worn {row['times_worn']} times</span></div>"""
 
 st.sidebar.markdown("## ✨ SmartStyle")
-st.sidebar.caption("SMART WARDROBE ASSISTANT")
+st.sidebar.caption("Closetra ASSISTANT")
 page = st.sidebar.radio("Navigation", ["🏠 Dashboard","👗 My Wardrobe","✨ Outfit Recommender","📊 Insights","➕ Add Item"])
 st.sidebar.divider()
 st.sidebar.caption("Prototype · Phase 1")
