@@ -36,7 +36,7 @@ DF = load_data()
 
 
 # ============================================================
-# CUSTOM DESIGN / CSS
+# CUSTOM CSS
 # ============================================================
 
 st.markdown("""
@@ -63,12 +63,11 @@ html, body, [class*="css"] {
 }
 
 [data-testid="stSidebar"] {
-    background: rgba(255,255,255,.86);
+    background: rgba(255,255,255,.90);
     border-right: 1px solid #ece8f5;
 }
 
-
-/* HERO SECTION */
+/* HERO */
 
 .hero {
     padding: 28px 30px;
@@ -92,41 +91,52 @@ html, body, [class*="css"] {
 
 .hero p {
     margin: 0;
-    opacity: .9;
+    opacity: .92;
     font-size: 1.02rem;
 }
 
-
-/* METRIC CARDS */
+/* METRICS */
 
 [data-testid="stMetric"] {
-    background: rgba(255,255,255,.92);
+    background: rgba(255,255,255,.94);
     border: 1px solid #eeeaf6;
     padding: 18px;
     border-radius: 18px;
     box-shadow: 0 8px 25px rgba(44,35,84,.07);
 }
 
-
 /* CLOTHING CARDS */
 
 .card {
-    background: rgba(255,255,255,.94);
+    background: rgba(255,255,255,.96);
     border: 1px solid #eeeaf6;
     border-radius: 18px;
     padding: 18px;
     margin: 7px 0;
     box-shadow: 0 8px 24px rgba(44,35,84,.06);
-    min-height: 155px;
+    min-height: 165px;
+    transition: 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(44,35,84,.12);
 }
 
 .card .emoji {
-    font-size: 2rem;
+    font-size: 2.1rem;
+    margin-bottom: 7px;
+}
+
+.card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #29243a;
 }
 
 .muted {
     color: #777187;
-    font-size: .9rem;
+    font-size: .88rem;
 }
 
 .tag {
@@ -136,11 +146,10 @@ html, body, [class*="css"] {
     padding: 4px 9px;
     border-radius: 999px;
     font-size: .76rem;
-    margin: 2px;
+    margin: 4px 3px 5px 0;
 }
 
-
-/* OUTFIT CARDS */
+/* OUTFIT */
 
 .outfit {
     background: white;
@@ -152,8 +161,7 @@ html, body, [class*="css"] {
     min-height: 190px;
 }
 
-
-/* MATCH SCORE */
+/* SCORE */
 
 .score {
     background: linear-gradient(
@@ -170,7 +178,6 @@ html, body, [class*="css"] {
     margin-top: 18px;
 }
 
-
 /* BUTTONS */
 
 .stButton > button,
@@ -186,7 +193,7 @@ html, body, [class*="css"] {
 
 
 # ============================================================
-# CLOTHING ICONS
+# ICONS
 # ============================================================
 
 emoji = {
@@ -203,53 +210,36 @@ emoji = {
 # ============================================================
 
 def hero(title, subtitle):
+    html = (
+        '<div class="hero">'
+        f'<h1>{title}</h1>'
+        f'<p>{subtitle}</p>'
+        '</div>'
+    )
 
     st.markdown(
-        f"""
-        <div class="hero">
-            <h1>{title}</h1>
-            <p>{subtitle}</p>
-        </div>
-        """,
+        html,
         unsafe_allow_html=True
     )
 
 
 def item_card(row):
-
     icon = emoji.get(row["category"], "👚")
 
-    return f"""
-    <div class='card'>
+    html = (
+        '<div class="card">'
+        f'<div class="emoji">{icon}</div>'
+        f'<div class="card-title">{row["item_name"]}</div>'
+        f'<span class="muted">{row["color"]} · {row["category"]}</span>'
+        '<br><br>'
+        f'<span class="tag">{row["occasion"]}</span>'
+        f'<span class="tag">{row["style"]}</span>'
+        '<br>'
+        f'<span class="muted">Worn {row["times_worn"]} times</span>'
+        '</div>'
+    )
 
-        <div class='emoji'>{icon}</div>
-
-        <b>{row['item_name']}</b>
-
-        <br>
-
-        <span class='muted'>
-            {row['color']} · {row['category']}
-        </span>
-
-        <br><br>
-
-        <span class='tag'>
-            {row['occasion']}
-        </span>
-
-        <span class='tag'>
-            {row['style']}
-        </span>
-
-        <br>
-
-        <span class='muted'>
-            Worn {row['times_worn']} times
-        </span>
-
-    </div>
-    """
+    return html
 
 
 # ============================================================
@@ -310,17 +300,19 @@ if page == "🏠 Dashboard":
         "Organized"
     )
 
+    most_worn_item = DF.loc[
+        DF.times_worn.idxmax(),
+        "item_name"
+    ]
+
     c3.metric(
         "Most Worn",
-        DF.loc[
-            DF.times_worn.idxmax(),
-            "item_name"
-        ],
+        most_worn_item,
         f"{DF.times_worn.max()} wears"
     )
 
     utilization = int(
-        (DF.times_worn.gt(5).mean()) * 100
+        DF.times_worn.gt(5).mean() * 100
     )
 
     c4.metric(
@@ -329,16 +321,13 @@ if page == "🏠 Dashboard":
         "Worn > 5 times"
     )
 
-
-    # -------------------------
-    # CHARTS
-    # -------------------------
-
     st.subheader(
         "Wardrobe at a glance"
     )
 
     left, right = st.columns(2)
+
+    # CATEGORY DISTRIBUTION
 
     cats = (
         DF.category
@@ -351,7 +340,7 @@ if page == "🏠 Dashboard":
         cats,
         names="Category",
         values="Items",
-        hole=.58
+        hole=0.58
     )
 
     fig1.update_layout(
@@ -369,6 +358,7 @@ if page == "🏠 Dashboard":
         use_container_width=True
     )
 
+    # MOST WORN ITEMS
 
     top = (
         DF.nlargest(
@@ -405,10 +395,7 @@ if page == "🏠 Dashboard":
         use_container_width=True
     )
 
-
-    # -------------------------
-    # MOST USED ITEMS
-    # -------------------------
+    # MOST USED PIECES
 
     st.subheader(
         "Most-used pieces"
@@ -416,17 +403,21 @@ if page == "🏠 Dashboard":
 
     cols = st.columns(4)
 
+    top_four = DF.nlargest(
+        4,
+        "times_worn"
+    )
+
     for i, (_, row) in enumerate(
-        DF.nlargest(
-            4,
-            "times_worn"
-        ).iterrows()
+        top_four.iterrows()
     ):
 
-        cols[i].markdown(
-            item_card(row),
-            unsafe_allow_html=True
-        )
+        with cols[i]:
+
+            st.markdown(
+                item_card(row),
+                unsafe_allow_html=True
+            )
 
 
 # ============================================================
@@ -437,7 +428,7 @@ elif page == "👗 My Wardrobe":
 
     hero(
         "My Wardrobe",
-        "Search and explore your digital clothing collection."
+        "Search and filter your digital clothing collection."
     )
 
     a, b, c, d = st.columns(4)
@@ -471,17 +462,12 @@ elif page == "👗 My Wardrobe":
         )
     )
 
-
-    # -------------------------
-    # FILTER DATA
-    # -------------------------
-
-    f = DF.copy()
+    filtered = DF.copy()
 
     if search:
 
-        f = f[
-            f.item_name.str.contains(
+        filtered = filtered[
+            filtered.item_name.str.contains(
                 search,
                 case=False,
                 na=False
@@ -490,35 +476,35 @@ elif page == "👗 My Wardrobe":
 
     if category != "All":
 
-        f = f[
-            f.category == category
+        filtered = filtered[
+            filtered.category == category
         ]
 
     if color != "All":
 
-        f = f[
-            f.color == color
+        filtered = filtered[
+            filtered.color == color
         ]
 
     if occasion != "All":
 
-        f = f[
-            f.occasion == occasion
+        filtered = filtered[
+            filtered.occasion == occasion
         ]
 
-
     st.caption(
-        f"Showing {len(f)} of {len(DF)} items"
+        f"Showing {len(filtered)} of {len(DF)} items"
     )
-
-
-    # -------------------------
-    # DISPLAY CLOTHING CARDS
-    # -------------------------
 
     rows = list(
-        f.iterrows()
+        filtered.iterrows()
     )
+
+    if len(rows) == 0:
+
+        st.info(
+            "No wardrobe items match these filters."
+        )
 
     for start in range(
         0,
@@ -528,14 +514,20 @@ elif page == "👗 My Wardrobe":
 
         cols = st.columns(4)
 
+        current_rows = rows[
+            start:start + 4
+        ]
+
         for j, (_, row) in enumerate(
-            rows[start:start + 4]
+            current_rows
         ):
 
-            cols[j].markdown(
-                item_card(row),
-                unsafe_allow_html=True
-            )
+            with cols[j]:
+
+                st.markdown(
+                    item_card(row),
+                    unsafe_allow_html=True
+                )
 
 
 # ============================================================
@@ -575,7 +567,6 @@ elif page == "✨ Outfit Recommender":
         )
     )
 
-
     if st.button(
         "✨ Generate my outfit",
         use_container_width=True,
@@ -592,10 +583,7 @@ elif page == "✨ Outfit Recommender":
             )
         ].copy()
 
-
-        # -------------------------
         # STYLE FILTER
-        # -------------------------
 
         if style != "Any":
 
@@ -607,10 +595,7 @@ elif page == "✨ Outfit Recommender":
 
                 pool = styled
 
-
-        # -------------------------
-        # ITEM PICKING FUNCTION
-        # -------------------------
+        # ITEM PICKER
 
         def pick(cat):
 
@@ -642,12 +627,7 @@ elif page == "✨ Outfit Recommender":
                 .iloc[0]
             )
 
-
-        # -------------------------
-        # BUILD OUTFIT
-        # -------------------------
-
-        chosen = []
+        # CREATE OUTFIT
 
         if (
             occasion == "Party"
@@ -670,96 +650,85 @@ elif page == "✨ Outfit Recommender":
                 pick("Footwear")
             ]
 
-
         chosen = [
-            x for x in chosen
-            if x is not None
+            item
+            for item in chosen
+            if item is not None
         ]
 
+        if not chosen:
 
-        # -------------------------
-        # DISPLAY OUTFIT
-        # -------------------------
+            st.warning(
+                "No suitable outfit could be generated."
+            )
 
-        cols = (
-            st.columns(len(chosen))
-            if chosen
-            else []
-        )
+        else:
 
-        for col, row in zip(
-            cols,
-            chosen
-        ):
+            st.subheader(
+                "✨ Your Recommended Outfit"
+            )
 
-            col.markdown(
-                f"""
-                <div class='outfit'>
+            cols = st.columns(
+                len(chosen)
+            )
 
-                    <div style='font-size:3rem'>
-                        {emoji.get(row['category'], '👚')}
-                    </div>
+            for col, row in zip(
+                cols,
+                chosen
+            ):
 
-                    <h3>
-                        {row['item_name']}
-                    </h3>
+                icon = emoji.get(
+                    row["category"],
+                    "👚"
+                )
 
-                    <div class='muted'>
+                outfit_html = (
+                    '<div class="outfit">'
+                    f'<div style="font-size:3rem">{icon}</div>'
+                    f'<h3>{row["item_name"]}</h3>'
+                    f'<div class="muted">{row["color"]} · {row["style"]}<br>{row["season"]}</div>'
+                    '</div>'
+                )
 
-                        {row['color']}
-                        ·
-                        {row['style']}
+                with col:
 
-                        <br>
+                    st.markdown(
+                        outfit_html,
+                        unsafe_allow_html=True
+                    )
 
-                        {row['season']}
+            # MATCH SCORE
 
-                    </div>
+            score = min(
+                97,
+                78
+                + len(chosen) * 4
+                + (
+                    5
+                    if style != "Any"
+                    else 0
+                )
+            )
 
-                </div>
-                """,
+            score_html = (
+                '<div class="score">'
+                f'🎯 {score}% MATCH · '
+                f'Suitable for {occasion.lower()} use '
+                f'and {season.lower()} conditions'
+                '</div>'
+            )
+
+            st.markdown(
+                score_html,
                 unsafe_allow_html=True
             )
 
-
-        # -------------------------
-        # MATCH SCORE
-        # -------------------------
-
-        score = min(
-            97,
-            78
-            + len(chosen) * 4
-            + (
-                5
-                if style != "Any"
-                else 0
+            st.info(
+                "Prototype logic: recommendations currently "
+                "use occasion, season, style and wardrobe usage. "
+                "A later phase can replace this rule-based system "
+                "with a learned personalization model."
             )
-        )
-
-        st.markdown(
-            f"""
-            <div class='score'>
-
-            🎯 {score}% MATCH
-
-            · Suitable for
-            {occasion.lower()} use
-            and
-            {season.lower()} conditions
-
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-
-        st.info(
-            "Prototype logic: recommendations currently use "
-            "occasion, season, style and wardrobe usage. "
-            "A later phase can replace this with a learned "
-            "personalization model."
-        )
 
 
 # ============================================================
@@ -775,10 +744,7 @@ elif page == "📊 Insights":
 
     a, b = st.columns(2)
 
-
-    # -------------------------
     # COLOR DISTRIBUTION
-    # -------------------------
 
     colors = (
         DF.color
@@ -799,10 +765,7 @@ elif page == "📊 Insights":
         use_container_width=True
     )
 
-
-    # -------------------------
     # STYLE DISTRIBUTION
-    # -------------------------
 
     styles = (
         DF["style"]
@@ -815,7 +778,7 @@ elif page == "📊 Insights":
         styles,
         names="Style",
         values="Items",
-        hole=.5,
+        hole=0.5,
         title="Style Mix"
     )
 
@@ -824,10 +787,7 @@ elif page == "📊 Insights":
         use_container_width=True
     )
 
-
-    # -------------------------
-    # UNDERUTILIZED CLOTHES
-    # -------------------------
+    # UNDER-UTILIZED ITEMS
 
     st.subheader(
         "Under-utilized items"
@@ -870,14 +830,12 @@ elif page == "➕ Add Item":
         "Expand your Closetra digital wardrobe by adding a new piece."
     )
 
-
     with st.form("add"):
 
         name = st.text_input(
             "Item name",
             placeholder="e.g. Navy Overshirt"
         )
-
 
         a, b = st.columns(2)
 
@@ -896,7 +854,6 @@ elif page == "➕ Add Item":
             "Color",
             placeholder="Navy"
         )
-
 
         c, d = st.columns(2)
 
@@ -918,7 +875,6 @@ elif page == "➕ Add Item":
             ]
         )
 
-
         style = st.selectbox(
             "Style",
             [
@@ -930,17 +886,11 @@ elif page == "➕ Add Item":
             ]
         )
 
-
         submitted = st.form_submit_button(
-            "Add to wardrobe",
+            "✨ Add to wardrobe",
             use_container_width=True,
             type="primary"
         )
-
-
-    # -------------------------
-    # SAVE ITEM
-    # -------------------------
 
     if submitted:
 
@@ -956,48 +906,34 @@ elif page == "➕ Add Item":
 
         else:
 
-            new = pd.DataFrame(
+            new_item = pd.DataFrame(
                 [
                     {
                         "id": int(
                             DF.id.max()
                         ) + 1,
-
-                        "item_name":
-                            name.strip(),
-
-                        "category":
-                            category,
-
-                        "color":
-                            color.strip().title(),
-
-                        "season":
-                            season,
-
-                        "occasion":
-                            occasion,
-
-                        "style":
-                            style,
-
-                        "times_worn":
-                            0
+                        "item_name": name.strip(),
+                        "category": category,
+                        "color": color.strip().title(),
+                        "season": season,
+                        "occasion": occasion,
+                        "style": style,
+                        "times_worn": 0
                     }
                 ]
             )
 
-
-            save_data(
-                pd.concat(
-                    [
-                        DF,
-                        new
-                    ],
-                    ignore_index=True
-                )
+            updated_data = pd.concat(
+                [
+                    DF,
+                    new_item
+                ],
+                ignore_index=True
             )
 
+            save_data(
+                updated_data
+            )
 
             st.success(
                 f"✨ {name} was successfully added to your Closetra wardrobe!"
