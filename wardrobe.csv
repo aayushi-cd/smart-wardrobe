@@ -1,0 +1,25 @@
+id,item_name,category,color,season,occasion,style,times_worn
+1,Black T-Shirt,Top,Black,Summer,Casual,Minimal,12
+2,Blue Jeans,Bottom,Blue,All Season,Casual,Streetwear,18
+3,White Shirt,Top,White,All Season,Formal,Classic,8
+4,Black Trousers,Bottom,Black,All Season,Formal,Classic,10
+5,Floral Dress,Dress,Pink,Summer,Party,Feminine,5
+6,Denim Jacket,Outerwear,Blue,Winter,Casual,Streetwear,7
+7,White Sneakers,Footwear,White,All Season,Casual,Minimal,20
+8,Black Heels,Footwear,Black,All Season,Party,Elegant,4
+9,Beige Top,Top,Beige,Summer,Casual,Minimal,9
+10,Cargo Pants,Bottom,Green,Winter,Casual,Streetwear,11
+11,Black Dress,Dress,Black,All Season,Party,Elegant,6
+12,White T-Shirt,Top,White,Summer,Casual,Minimal,15
+13,Blue Shirt,Top,Blue,All Season,Formal,Classic,7
+14,Wide Leg Jeans,Bottom,Blue,All Season,Casual,Streetwear,13
+15,White Heels,Footwear,White,All Season,Party,Elegant,3
+16,Black Sneakers,Footwear,Black,All Season,Casual,Streetwear,16
+17,Crop Top,Top,Pink,Summer,Party,Feminine,8
+18,Winter Coat,Outerwear,Black,Winter,Formal,Classic,5
+19,Olive Hoodie,Top,Green,Winter,Casual,Streetwear,14
+20,Beige Trousers,Bottom,Beige,All Season,Formal,Classic,6
+21,Red Midi Dress,Dress,Red,Summer,Party,Elegant,4
+22,Loafers,Footwear,Brown,All Season,Formal,Classic,9
+23,Cardigan,Outerwear,Beige,Winter,Casual,Minimal,8
+24,Graphic Tee,Top,White,Summer,Casual,Streetwear,10
